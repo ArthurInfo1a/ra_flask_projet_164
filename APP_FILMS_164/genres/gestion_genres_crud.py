@@ -134,7 +134,7 @@ def genres_ajouter_wtf():
     
     But : Editer(update) un genre qui a été sélectionné dans le formulaire "genres_afficher.html"
     
-    Remarque :  Dans le champ "nom_genre_update_wtf" du formulaire "genres/genre_update_wtf.html",
+    Remarque :  Dans le champ "nom_personne_update_wtf" du formulaire "genres/genre_update_wtf.html",
                 le contrôle de la saisie s'effectue ici en Python.
                 On transforme la saisie en minuscules.
                 On ne doit pas accepter des valeurs vides, des valeurs avec des chiffres,
@@ -156,18 +156,18 @@ def genre_update_wtf():
         if form_update.validate_on_submit():
             # Récupèrer la valeur du champ depuis "genre_update_wtf.html" après avoir cliqué sur "SUBMIT".
             # Puis la convertir en lettres minuscules.
-            name_genre_update = form_update.nom_genre_update_wtf.data
+            name_genre_update = form_update.nom_personne_update_wtf.data
             name_genre_update = name_genre_update.lower()
-            date_genre_essai = form_update.date_genre_wtf_essai.data
+            prenom_personne_update = form_update.prenom_personne_update_wtf.data
 
             valeur_update_dictionnaire = {"value_id_genre": id_genre_update,
                                           "value_name_genre": name_genre_update,
-                                          "value_date_genre_essai": date_genre_essai
+                                          "value_prenom_personne_update": prenom_personne_update
                                           }
             print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
 
-            str_sql_update_intitulegenre = """UPDATE t_personnes SET nom = %(value_name_genre)s, 
-            date_dajout = %(value_date_genre_essai)s WHERE id_personnes = %(value_id_genre)s """
+            str_sql_update_intitulegenre = """UPDATE t_personnes SET nom = %(value_name_genre)s,
+             prenom = %(value_prenom_personne) WHERE id_personnes = %(value_id_genre)s"""
             with DBconnection() as mconn_bd:
                 mconn_bd.execute(str_sql_update_intitulegenre, valeur_update_dictionnaire)
 
@@ -179,19 +179,19 @@ def genre_update_wtf():
             return redirect(url_for('genres_afficher', order_by="ASC", id_genre_sel=id_genre_update))
         elif request.method == "GET":
             # Opération sur la BD pour récupérer "id_genre" et "intitule_genre" de la "t_genre"
-            str_sql_id_genre = "SELECT id_personnes, nom, date_dajout FROM t_personnes " \
+            str_sql_id_genre = "SELECT id_personnes, nom, prenom FROM t_personnes " \
                                "WHERE id_personnes = %(value_id_genre)s"
-            valeur_select_dictionnaire = {"value_id_g   enre": id_genre_update}
+            valeur_select_dictionnaire = {"value_id_genre": id_genre_update}
             with DBconnection() as mybd_conn:
                 mybd_conn.execute(str_sql_id_genre, valeur_select_dictionnaire)
-            # Une seule valeur est suffisante "fetchone()", vu qu'il n'y a qu'un seul champ "nom genre" pour l'UPDATE
+            # Une s eule valeur est suffisante "fetchone()", vu qu'il n'y a qu'un seul champ "nom genre" pour l'UPDATE
             data_nom_genre = mybd_conn.fetchone()
             print("data_nom_genre ", data_nom_genre, " type ", type(data_nom_genre), " genre ",
                   data_nom_genre["intitule_genre"])
 
             # Afficher la valeur sélectionnée dans les champs du formulaire "genre_update_wtf.html"
-            form_update.nom_genre_update_wtf.data = data_nom_genre["intitule_genre"]
-            form_update.date_genre_wtf_essai.data = data_nom_genre["date_ins_genre"]
+            form_update.nom_personne_update_wtf.data = data_nom_genre["intitule_genre"]
+            form_update.prenom_personne_update_wtf.data = data_nom_genre["prenom"]
 
     except Exception as Exception_genre_update_wtf:
         raise ExceptionGenreUpdateWtf(f"fichier : {Path(__file__).name}  ;  "
@@ -281,7 +281,7 @@ def genre_delete_wtf():
                 session['data_films_attribue_genre_delete'] = data_films_attribue_genre_delete
 
                 # Opération sur la BD pour récupérer "id_genre" et "intitule_genre" de la "t_genre"
-                str_sql_id_genre = "SELECT id_personnes, nom FROM t_personnes WHERE id_personnes = %(value_id_genre)s"
+                str_sql_id_genre = "SELECT id_personnes, nom, prenom FROM t_personnes WHERE id_personnes = %(value_id_genre)s"
 
                 mydb_conn.execute(str_sql_id_genre, valeur_select_dictionnaire)
                 # Une seule valeur est suffisante "fetchone()",
