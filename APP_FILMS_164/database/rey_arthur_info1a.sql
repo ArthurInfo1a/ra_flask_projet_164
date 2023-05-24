@@ -1,3 +1,21 @@
+-- OM 2021.02.17
+-- FICHIER MYSQL POUR FAIRE FONCTIONNER LES EXEMPLES
+-- DE REQUETES MYSQL
+-- Database: rey_arthur_info1a
+
+-- Destruction de la BD si elle existe.
+-- Pour être certain d'avoir la dernière version des données
+
+DROP DATABASE IF EXISTS rey_arthur_info1a;
+
+-- Création d'un nouvelle base de donnée
+
+CREATE DATABASE IF NOT EXISTS rey_arthur_info1a;
+
+-- Utilisation de cette base de donnée
+
+USE rey_arthur_info1a;
+
 -- --------------------------------------------------------
 -- Hôte :                        localhost
 -- Version du serveur:           8.0.31 - MySQL Community Server - GPL
