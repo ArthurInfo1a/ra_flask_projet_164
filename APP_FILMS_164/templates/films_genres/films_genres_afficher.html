@@ -32,13 +32,13 @@
 			<tbody>
 				<tr>
 					  <th class="align-middle">
-						  {{ row.id_film }}
+						  {{ row.id_materiel }}
 					  </th>
 					  <th class="align-middle">
-						{{ row.nom_film }}
+						{{ row.fk_materiel }}
 					  </th>
 					  <th class="align-middle">
-						{{ row.duree_film|default("", True) }}
+						{{ row.fk_personnes }}
 					  </th>
 					  <th class="align-middle">
 						{{ row.date_sortie_film|default("", True) }}
