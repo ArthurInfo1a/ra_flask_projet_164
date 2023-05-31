@@ -33,9 +33,9 @@ def films_genres_afficher(id_film_sel):
         try:
             with DBconnection() as mc_afficher:
                 strsql_genres_films_afficher_data = """SELECT id_personne_avoir_mail, fk_materiel, fk_personne FROM t_personne_avoir_matériel
-                                                            RIGHT JOIN t_materiel ON t_materiel.id_materiel = t_materiel.FK_t_personne_avoir_matériel_t_materiel
-                                                            LEFT JOIN t_personnes ON t_personnes.id_personnes = t_persones.FK_t_personne_avoir_matériel_t_personnes
-                                                            GROUP BY id_materiel"""
+                                                            RIGHT JOIN t_materiel ON t_materiel.id_materiel = t_personne_avoir_matériel.fk_materiel
+                                                            LEFT JOIN t_personnes ON t_personnes.id_personnes = t_personne_avoir_matériel.fk_personne
+                                                            """
                 if id_film_sel == 0:
                     # le paramètre 0 permet d'afficher tous les films
                     # Sinon le paramètre représente la valeur de l'id du film
