@@ -187,10 +187,10 @@ def genre_update_wtf():
             # Une s eule valeur est suffisante "fetchone()", vu qu'il n'y a qu'un seul champ "nom genre" pour l'UPDATE
             data_nom_genre = mybd_conn.fetchone()
             print("data_nom_genre ", data_nom_genre, " type ", type(data_nom_genre), " genre ",
-                  data_nom_genre["intitule_genre"])
+                  data_nom_genre["nom"])
 
             # Afficher la valeur sélectionnée dans les champs du formulaire "genre_update_wtf.html"
-            form_update.nom_personne_update_wtf.data = data_nom_genre["intitule_genre"]
+            form_update.nom_personne_update_wtf.data = data_nom_genre["nom"]
             form_update.prenom_personne_update_wtf.data = data_nom_genre["prenom"]
 
     except Exception as Exception_genre_update_wtf:
@@ -247,8 +247,8 @@ def genre_delete_wtf():
                 valeur_delete_dictionnaire = {"value_id_genre": id_genre_delete}
                 print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
 
-                str_sql_delete_films_genre = """DELETE FROM t_genre_film WHERE fk_genre = %(value_id_genre)s"""
-                str_sql_delete_idgenre = """DELETE FROM t_genre WHERE id_genre = %(value_id_genre)s"""
+                str_sql_delete_films_genre = """DELETE FROM t_personne_avoir_matériel WHERE fk_personne = %(value_id_genre)s"""
+                str_sql_delete_idgenre = """DELETE FROM t_personnes WHERE id_persones = %(value_id_genre)s"""
                 # Manière brutale d'effacer d'abord la "fk_genre", même si elle n'existe pas dans la "t_genre_film"
                 # Ensuite on peut effacer le genre vu qu'il n'est plus "lié" (INNODB) dans la "t_genre_film"
                 with DBconnection() as mconn_bd:
@@ -267,9 +267,9 @@ def genre_delete_wtf():
 
             # Requête qui affiche tous les films_genres qui ont le genre que l'utilisateur veut effacer
             str_sql_genres_films_delete = """SELECT id_personne_avoir_mail, nom_materiel, id_personnes, nom FROM t_personne_avoir_matériel 
-                                            INNER JOIN t_materiel ON t_personnes_avoir_matériel.fk_materiel = t_materiel.id_materiel
-                                            INNER JOIN t_personnes ON t_personnes_avoir_matériel.fk_personne = t_personnes.id_personnes
-                                            WHERE fk_personnes = %(value_id_genre)s"""
+                                            INNER JOIN t_materiel ON t_personne_avoir_matériel.fk_materiel = t_materiel.id_materiel
+                                            INNER JOIN t_personnes ON t_personne_avoir_matériel.fk_personne = t_personnes.id_personnes
+                                            WHERE id_personnes = %(value_id_genre)s"""
 
             with DBconnection() as mydb_conn:
                 mydb_conn.execute(str_sql_genres_films_delete, valeur_select_dictionnaire)
@@ -288,10 +288,10 @@ def genre_delete_wtf():
                 # vu qu'il n'y a qu'un seul champ "nom genre" pour l'action DELETE
                 data_nom_genre = mydb_conn.fetchone()
                 print("data_nom_genre ", data_nom_genre, " type ", type(data_nom_genre), " genre ",
-                      data_nom_genre["intitule_genre"])
+                      data_nom_genre["nom_materiel"])
 
             # Afficher la valeur sélectionnée dans le champ du formulaire "genre_delete_wtf.html"
-            form_delete.nom_genre_delete_wtf.data = data_nom_genre["intitule_genre"]
+            form_delete.nom_genre_delete_wtf.data = data_nom_genre["nom_materiel"]
 
             # Le bouton pour l'action "DELETE" dans le form. "genre_delete_wtf.html" est caché.
             btn_submit_del = False
