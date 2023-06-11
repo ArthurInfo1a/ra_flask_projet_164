@@ -42,6 +42,16 @@ class FormWTFUpdateGenre(FlaskForm):
                                                                                          "apostrophe, de double trait "
                                                                                          "union")
                                                                           ])
+    prenom_personne_update_wtf = StringField("Clavioter le nom de la personne ",
+                                          validators=[Length(min=2, max=20, message="min 2 max 20"),
+                                                      Regexp(nom_genre_update_regexp,
+                                                             message="Pas de chiffres, de "
+                                                                     "caractères "
+                                                                     "spéciaux, "
+                                                                     "d'espace à double, de double "
+                                                                     "apostrophe, de double trait "
+                                                                     "union")
+                                                      ])
     #date_genre_wtf_essai = DateField("Essai date", validators=[InputRequired("Date obligatoire"),
      #                                                          DataRequired("Date non valide")])
     submit = SubmitField("Update genre")

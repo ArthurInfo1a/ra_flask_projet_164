@@ -34,7 +34,7 @@ def genres_afficher(order_by, id_genre_sel):
         try:
             with DBconnection() as mc_afficher:
                 if order_by == "ASC" and id_genre_sel == 0:
-                    strsql_genres_afficher = """SELECT * FROM t_personnes"""
+                    strsql_genres_afficher = """SELECT id_personnes, nom, prenom FROM t_personnes"""
                     mc_afficher.execute(strsql_genres_afficher)
                 elif order_by == "ASC":
                     # C'EST LA QUE VOUS ALLEZ DEVOIR PLACER VOTRE PROPRE LOGIQUE MySql
@@ -43,11 +43,11 @@ def genres_afficher(order_by, id_genre_sel):
                     # donc, je précise les champs à afficher
                     # Constitution d'un dictionnaire pour associer l'id du genre sélectionné avec un nom de variable
                     valeur_id_genre_selected_dictionnaire = {"value_id_genre_selected": id_genre_sel}
-                    strsql_genres_afficher = """SELECT * FROM t_personnes WHERE id_personnes = %(value_id_genre_selected)s"""
+                    strsql_genres_afficher = """SELECT id_personnes, nom, prenom FROM t_personnes WHERE id_personnes = %(value_id_genre_selected)s"""
 
                     mc_afficher.execute(strsql_genres_afficher, valeur_id_genre_selected_dictionnaire)
                 else:
-                    strsql_genres_afficher = """SELECT * FROM t_personnes"""
+                    strsql_genres_afficher = """SELECT id_personnes, nom, prenom FROM t_personnes"""
 
                     mc_afficher.execute(strsql_genres_afficher)
 
@@ -162,7 +162,7 @@ def genre_update_wtf():
 
             valeur_update_dictionnaire = {"value_id_genre": id_genre_update,
                                           "value_name_genre": name_genre_update,
-                                          "value_prenom_personne_update": prenom_personne_update
+                                          "value_prenom_personne": prenom_personne_update
                                           }
             print("valeur_update_dictionnaire ", valeur_update_dictionnaire)
 
@@ -248,7 +248,7 @@ def genre_delete_wtf():
                 print("valeur_delete_dictionnaire ", valeur_delete_dictionnaire)
 
                 str_sql_delete_films_genre = """DELETE FROM t_personne_avoir_matériel WHERE fk_personne = %(value_id_genre)s"""
-                str_sql_delete_idgenre = """DELETE FROM t_personnes WHERE id_persones = %(value_id_genre)s"""
+                str_sql_delete_idgenre = """DELETE FROM t_personnes WHERE id_personnes = %(value_id_genre)s"""
                 # Manière brutale d'effacer d'abord la "fk_genre", même si elle n'existe pas dans la "t_genre_film"
                 # Ensuite on peut effacer le genre vu qu'il n'est plus "lié" (INNODB) dans la "t_genre_film"
                 with DBconnection() as mconn_bd:
@@ -288,10 +288,10 @@ def genre_delete_wtf():
                 # vu qu'il n'y a qu'un seul champ "nom genre" pour l'action DELETE
                 data_nom_genre = mydb_conn.fetchone()
                 print("data_nom_genre ", data_nom_genre, " type ", type(data_nom_genre), " genre ",
-                      data_nom_genre["nom_materiel"])
+                      data_nom_genre["nom"])
 
             # Afficher la valeur sélectionnée dans le champ du formulaire "genre_delete_wtf.html"
-            form_delete.nom_genre_delete_wtf.data = data_nom_genre["nom_materiel"]
+            form_delete.nom_genre_delete_wtf.data = data_nom_genre["nom"]
 
             # Le bouton pour l'action "DELETE" dans le form. "genre_delete_wtf.html" est caché.
             btn_submit_del = False

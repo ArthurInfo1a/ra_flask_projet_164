@@ -32,10 +32,10 @@ def films_genres_afficher(id_film_sel):
     if request.method == "GET":
         try:
             with DBconnection() as mc_afficher:
-                strsql_genres_films_afficher_data = """SELECT id_personne_avoir_mail, fk_materiel, fk_personne FROM t_personne_avoir_matériel
+                strsql_genres_films_afficher_data = """SELECT id_materiel, nom_materiel, type, marque FROM t_personne_avoir_matériel
                                                             RIGHT JOIN t_materiel ON t_materiel.id_materiel = t_personne_avoir_matériel.fk_materiel
                                                             LEFT JOIN t_personnes ON t_personnes.id_personnes = t_personne_avoir_matériel.fk_personne
-                                                            """
+                                                            GROUP BY id_materiel"""
                 if id_film_sel == 0:
                     # le paramètre 0 permet d'afficher tous les films
                     # Sinon le paramètre représente la valeur de l'id du film
@@ -45,7 +45,7 @@ def films_genres_afficher(id_film_sel):
                     valeur_id_film_selected_dictionnaire = {"value_id_film_selected": id_film_sel}
                     # En MySql l'instruction HAVING fonctionne comme un WHERE... mais doit être associée à un GROUP BY
                     # L'opérateur += permet de concaténer une nouvelle valeur à la valeur de gauche préalablement définie.
-                    strsql_genres_films_afficher_data += """ HAVING id_film= %(value_id_film_selected)s"""
+                    strsql_genres_films_afficher_data += """ HAVING id_materiel = %(value_id_film_selected)s"""
 
                     mc_afficher.execute(strsql_genres_films_afficher_data, valeur_id_film_selected_dictionnaire)
 
@@ -55,7 +55,7 @@ def films_genres_afficher(id_film_sel):
 
                 # Différencier les messages.
                 if not data_genres_films_afficher and id_film_sel == 0:
-                    flash("""La table "t_film" est vide. !""", "warning")
+                    flash("""La table "t_materiel" est vide. !""", "warning")
                 elif not data_genres_films_afficher and id_film_sel > 0:
                     # Si l'utilisateur change l'id_film dans l'URL et qu'il ne correspond à aucun film
                     flash(f"Le film {id_film_sel} demandé n'existe pas !!", "warning")
@@ -220,7 +220,7 @@ def update_genre_film_selected():
 
             # SQL pour insérer une nouvelle association entre
             # "fk_film"/"id_film" et "fk_genre"/"id_genre" dans la "t_genre_film"
-            strsql_insert_genre_film = """INSERT INTO t_personne_avoir_matériel (id_genre_film, fk_genre, fk_film)
+            strsql_insert_genre_film = """INSERT INTO t_personne_avoir_matériel (id_personne_avoir_mail, fk_personne, fk_materiel)
                                                     VALUES (NULL, %(value_fk_genre)s, %(value_fk_film)s)"""
 
             # SQL pour effacer une (des) association(s) existantes entre "id_film" et "id_genre" dans la "t_genre_film"
@@ -275,20 +275,20 @@ def genres_films_afficher_data(valeur_id_film_selected_dict):
     print("valeur_id_film_selected_dict...", valeur_id_film_selected_dict)
     try:
 
-        strsql_film_selected = """SELECT id_materiel, nom_materiel, type, marque FROM t_personne_avoir_matériel
+        strsql_film_selected = """SELECT id_materiel, nom_materiel, type, marque FROM t_materiel
                                         INNER JOIN t_materiel ON t_materiel.id_materiel = t_personne_avoir_matériel.fk_materiel
                                         INNER JOIN t_personnes ON t_personnes.id_personnes = t_personne_avoir_matériel.fk_personne
-                                        WHERE id_film = %(value_id_film_selected)s"""
+                                        WHERE id_materiel = %(value_id_film_selected)s"""
 
-        strsql_genres_films_non_attribues = """SELECT id_genre, intitule_genre FROM t_genre WHERE id_genre not in(SELECT id_genre as idGenresFilms FROM t_genre_film
-                                                    INNER JOIN t_film ON t_film.id_film = t_genre_film.fk_film
-                                                    INNER JOIN t_genre ON t_genre.id_genre = t_genre_film.fk_genre
-                                                    WHERE id_film = %(value_id_film_selected)s)"""
+        strsql_genres_films_non_attribues = """SELECT id_personnes, nom, prenom FROM t_personnes WHERE id_personnes not in(SELECT id_personnes as idpersonnesavoirMatériel FROM t_personne_avoir_matériel
+                                                    INNER JOIN t_materiel ON t_materiel.id_materiel = t_personne_avoir_matériel.fk_materiel
+                                                    INNER JOIN t_personnes ON t_personnes.id_personnes = t_personne_avoir_matériel.fk_personne
+                                                    WHERE id_materiel = %(value_id_film_selected)s)"""
 
-        strsql_genres_films_attribues = """SELECT id_film, id_genre, intitule_genre FROM t_genre_film
-                                            INNER JOIN t_film ON t_film.id_film = t_genre_film.fk_film
-                                            INNER JOIN t_genre ON t_genre.id_genre = t_genre_film.fk_genre
-                                            WHERE id_film = %(value_id_film_selected)s"""
+        strsql_genres_films_attribues = """SELECT id_materiel, id_personnes, nom FROM t_personne_avoir_matériel
+                                            INNER JOIN t_materiel ON t_materiel.id_materiel = t_personne_avoir_matériel.fk_materiel
+                                            INNER JOIN t_personnes ON t_personnes.id_personnes  = t_personne_avoir_matériel.fk_personne
+                                            WHERE id_materiel = %(value_id_film_selected)s"""
 
         # Du fait de l'utilisation des "context managers" on accède au curseur grâce au "with".
         with DBconnection() as mc_afficher:
